@@ -1,1 +1,1 @@
-# cuda_stury
+# cuda_study
