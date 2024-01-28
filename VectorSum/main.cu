@@ -93,7 +93,7 @@ class NTimer {
                 std::chrono::duration_cast<std::chrono::nanoseconds>(obj.t_acc)
                     .count() /
                 1000000.0;
-            return os << "name=" << obj.name_ << ", total=" << t_mills << " ms";
+            return os << obj.name_ << ": " << t_mills << " ms";
         }
     };
 
@@ -121,10 +121,9 @@ public:
     void tock(size_t timer_id) { timers.at(timer_id).tock(); }
 
     friend std::ostream &operator<<(std::ostream &os, const NTimer &obj) {
-        os << "Timer Report[num_timers=" << obj.timers.size() << "]\n"
-           << "*** Timers ***\n";
-        for (const auto &timer : obj.timers)
-            os << timer << '\n';
+        os << "Timer Report[num_timers=" << obj.timers.size() << "]\n";
+        for (auto i = 0; i < obj.timers.size(); ++i)
+            os << "  " << i << ". " << obj.timers[i] << '\n';
         return os;
     };
 };
@@ -139,17 +138,17 @@ vecorAdd(const int *a, int const *b, int *c) {
 int
 main() {
 
+    // clang-format off
     yh::NTimer timer;
-    const auto timer_cuda_total        = timer.addTimter("CUDA total");
-    const auto timer_kernel_exec       = timer.addTimter("Kernel execution");
-    const auto timer_cp_host_to_device = timer.addTimter("Host to Device copy");
-    const auto timer_cp_device_to_host = timer.addTimter("Device to Host copy");
-    const auto timer_host_vec_add      = timer.addTimter("Host VectorAdd");
+    const auto timer_cuda_total  = timer.addTimter("CUDA total");
+    const auto timer_kernel_exec = timer.addTimter("Kernel Execution(Device)");
+    const auto timer_cp_host_to_device =timer.addTimter("MemCopy(Host->Device)");
+    const auto timer_cp_device_to_host =timer.addTimter("MemCopy(Device->Host)");
+    const auto timer_host_vec_add = timer.addTimter("Kernel Execution(Host)");
+    // clang-format on
 
-
-    auto NUM_DATA = 1024 * 1;
-
-    const auto memSize = yh::getMemSize<int>(NUM_DATA);
+    const auto NUM_DATA = 1024 * 1;
+    const auto memSize  = yh::getMemSize<int>(NUM_DATA);
 
     const auto a          = new int[memSize];
     const auto b          = new int[memSize];
